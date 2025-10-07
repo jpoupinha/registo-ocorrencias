@@ -22,8 +22,6 @@ if st.session_state.tecnico_selecionado is None:
     st.title("👤 Selecionar Técnico")
     tecnico = st.selectbox("Escolha o seu nome:", tecnicos)
     if st.button("Continuar"):
-        st.session_state.tecnico_selecionado = tecnico
-        st.experimental_rerun()
 
 # Ecrã 2: Formulário de ocorrência
 else:
