@@ -18,10 +18,12 @@ if "tecnico_selecionado" not in st.session_state:
 
 # Ecrã 1: Seleção do técnico
 if st.session_state.tecnico_selecionado is None:
-    st.image("DPD logo.jpg", width=200)  # Certifica-te que o ficheiro image.png está no repositório
+    st.image("DPD logo.jpg", width=200)  # Certifica-te que o ficheiro está no repositório
     st.title("👤 Selecionar Técnico")
     tecnico = st.selectbox("Escolha o seu nome:", tecnicos)
-        if st.button("Continuar"):
+    if st.button("Continuar"):
+        st.session_state.tecnico_selecionado = tecnico
+
 # Ecrã 2: Formulário de ocorrência
 else:
     st.title("📋 Registo de Ocorrência")
