@@ -1,0 +1,66 @@
+import streamlit as st
+import pandas as pd
+from datetime import datetime
+import os
+
+# Nome do ficheiro CSV onde os dados serão guardados
+FICHEIRO_DADOS = "ocorrencias.csv"
+
+# Lista de técnicos disponíveis
+tecnicos = ["Bruno Guerreiro", "Ronaldo Tavares", "Pedro Puga", "José Reis"]
+
+# Configuração da página
+st.set_page_config(page_title="Registo de Ocorrências", layout="centered")
+
+# Inicializar sessão
+if "tecnico_selecionado" not in st.session_state:
+    st.session_state.tecnico_selecionado = None
+
+# Ecrã 1: Seleção do técnico
+if st.session_state.tecnico_selecionado is None:
+    st.image("image.png", width=200)  # Certifica-te que o ficheiro image.png está no repositório
+    st.title("👤 Selecionar Técnico")
+    tecnico = st.selectbox("Escolha o seu nome:", tecnicos)
+    if st.button("Continuar"):
+        st.session_state.tecnico_selecionado = tecnico
+        st.experimental_rerun()
+
+# Ecrã 2: Formulário de ocorrência
+else:
+    st.title("📋 Registo de Ocorrência")
+    st.markdown(f"**Técnico:** {st.session_state.tecnico_selecionado}")
+
+    with st.form("form_ocorrencia"):
+        data = st.date_input("Data", value=datetime.today())
+        localizacao = st.text_input("Localização")
+        ocorrencia = st.text_area("Descrição da Ocorrência")
+        acao = st.text_area("Ação Tomada")
+        turno = st.selectbox("Turno", ["Noite", "Manhã", "Tarde"])
+        submeter = st.form_submit_button("Submeter")
+
+        if submeter:
+            nova_ocorrencia = {
+                "Data": data.strftime("%Y-%m-%d"),
+                "Técnico": st.session_state.tecnico_selecionado,
+                "Localização": localizacao,
+                "Ocorrência": ocorrencia,
+                "Ação Tomada": acao,
+                "Turno": turno
+            }
+
+            if os.path.exists(FICHEIRO_DADOS):
+                df = pd.read_csv(FICHEIRO_DADOS)
+                df = pd.concat([df, pd.DataFrame([nova_ocorrencia])], ignore_index=True)
+            else:
+                df = pd.DataFrame([nova_ocorrencia])
+
+            df.to_csv(FICHEIRO_DADOS, index=False)
+            st.success("✅ Ocorrência registada com sucesso!")
+
+    # Relatório
+    st.subheader("📊 Relatório de Ocorrências")
+    if os.path.exists(FICHEIRO_DADOS):
+        df = pd.read_csv(FICHEIRO_DADOS)
+        st.dataframe(df)
+    else:
+        st.info("Ainda não existem ocorrências registadas.")
